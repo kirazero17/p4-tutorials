@@ -16,7 +16,6 @@
       },
       "action_name": "MyIngress.ipv4_forward",
       "action_params": {
-        "dstAddr": "08:00:00:00:01:00",
         "port": 2
       }
     },
@@ -27,7 +26,6 @@
       },
       "action_name": "MyIngress.ipv4_forward",
       "action_params": {
-        "dstAddr": "08:00:00:00:02:00",
         "port": 3
       }
     },
@@ -38,9 +36,27 @@
       },
       "action_name": "MyIngress.ipv4_forward",
       "action_params": {
-        "dstAddr": "08:00:00:00:03:33",
         "port": 1
       }
+    }
+  ],
+   "multicast_group_entries": [
+    {
+      "multicast_group_id": 1,
+      "replicas": [
+        {
+          "egress_port": 1,
+          "instance": 1
+        },
+        {
+          "egress_port": 2,
+          "instance": 1
+        },
+        {
+          "egress_port": 3,
+          "instance": 1
+        }
+      ]
     }
   ]
 }
