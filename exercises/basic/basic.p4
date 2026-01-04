@@ -135,22 +135,20 @@ control MyIngress(inout headers hdr,
         standard_metadata.mcast_grp = 1;
     }
 
-    action arp_reply_forward(egressSpec_t port) {
-        // standard_metadata.egress_spec = port;
+    action arp_reply_forward(macAddr_t request_mac) {
 
-        /* TODO: Handle ARP requests and craft response according to the match-action 
-        *  table 
-        */
         /* TODO: update operation code from request to reply */
-        
+        hdr.arp.opcode = ARP_OPER_REPLY;
         /* TODO: reply's dst_mac is the request's src mac */
-        
+        hdr.arp.dstMac = request_mac;
         /* TODO:reply's dst_ip is the request's src ip */
-        
+        ip4Addr_t bufIpv4 = hdr.arp.dstIpv4;
+        hdr.arp.dstIpv4 = hdr.arp.srcIpv4;
         /* TODO: reply's src ip is the request's dst ip */
-
+        hdr.arp.srcIpv4 = bufIpv4;
         /* TODO: update ethernet header, i.e., source and destination addresses */
-        
+        hdr.ethernet.dstAddr = hdr.ethernet.srcAddr;
+        hdr.ethernet.srcAddr = request_mac;
         /* TODO: send it back to the same port (metadata.ingress_port) */
     }
 
