@@ -14,5 +14,9 @@
 ## 2. Basic Tunneling:
 
 - [x] The original exercise is completed.
-- [ ] Add the myTunnel header to an IP packet upon ingress to the network
-- [ ] Remove the myTunnel header as the packet leaves to the network to an end host
+- [x] Add the myTunnel header to an IP packet upon ingress to the network => ***Done in a rough state, will revisit later***
+- [x] Remove the myTunnel header as the packet leaves to the network to an end host => ***Done in a rough state, will revisit later***
+
+# 3. Implementing a Control Plane using P4Runtime
+
+TBA

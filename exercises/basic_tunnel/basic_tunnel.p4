@@ -126,7 +126,7 @@ control MyIngress(inout headers hdr,
             NoAction;
         }
         size = 1024;
-        default_action = drop();
+        default_action = NoAction();
     }
 
     // TODO: declare a new action: myTunnel_forward(egressSpec_t port)
@@ -146,15 +146,60 @@ control MyIngress(inout headers hdr,
             NoAction;
         }
         size = 1024;
-        default_action = drop();
+        default_action = NoAction();
+    }
+
+    // Food for thought: tunnel encapsulation and decapsulation
+    action tunnel_attach(bit<16> dst_id, egressSpec_t port) {
+        hdr.ethernet.etherType = TYPE_MYTUNNEL;
+        hdr.myTunnel.setValid();
+        hdr.myTunnel.proto_id = TYPE_IPV4;
+        hdr.myTunnel.dst_id = dst_id;
+        standard_metadata.egress_spec = port;
+    }
+
+    table tun_encapsulation {
+        key = {
+            hdr.ipv4.dstAddr: lpm;
+        }
+        actions = {
+            tunnel_attach;
+            drop;
+            NoAction;
+        }
+        size = 1024;
+        default_action = NoAction();
+    }
+
+    action tunnel_detach(macAddr_t dstAddr, egressSpec_t port) {
+        hdr.ethernet.etherType = TYPE_IPV4;
+        hdr.myTunnel.setInvalid();
+        hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
+        hdr.ethernet.dstAddr = dstAddr;
+        standard_metadata.egress_spec = port;
+    }
+
+    table tun_decapsulation {
+        key = {
+            hdr.myTunnel.dst_id: exact;
+        }
+        actions = {
+            tunnel_detach;
+            drop;
+            NoAction;
+        }
+        size = 1024;
+        default_action = NoAction();
     }
 
     apply {
-        if (hdr.ipv4.isValid() && !hdr.myTunnel.isValid()) {
-            ipv4_lpm.apply();
-        }
         if (hdr.myTunnel.isValid()) {
+            tun_decapsulation.apply();
             myTunnel_exact.apply();
+        }
+        else if (hdr.ipv4.isValid() && !hdr.myTunnel.isValid()) {
+            ipv4_lpm.apply();
+            tun_encapsulation.apply();
         }
     }
 }
