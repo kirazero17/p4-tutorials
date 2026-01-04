@@ -68,26 +68,6 @@
       "action_params": {
         "port": 2
       }
-    },
-    {
-      "table": "MyIngress.arp_request",
-      "match": {
-        "hdr.arp.dstIpv4": "10.0.1.10"
-      },
-      "action_name": "MyIngress.arp_request_return",
-      "action_params": {
-        "dstMac": "08:00:00:00:01:00"
-      }
-    },
-    {
-      "table": "MyIngress.arp_request",
-      "match": {
-        "hdr.arp.dstIpv4": "10.0.2.20"
-      },
-      "action_name": "MyIngress.arp_request_return",
-      "action_params": {
-        "dstMac": "08:00:00:00:02:00"
-      }
     }
   ],
    "multicast_group_entries": [

@@ -128,7 +128,6 @@ control MyIngress(inout headers hdr,
     action ipv4_forward(egressSpec_t port) {
         standard_metadata.egress_spec = port;
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
-        // hdr.ethernet.dstAddr = dstAddr;
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
 
@@ -136,26 +135,23 @@ control MyIngress(inout headers hdr,
         standard_metadata.mcast_grp = 1;
     }
 
-    action arp_request_return(macAddr_t dstMac) {
-        hdr.arp.dstMac = dstMac;
-        hdr.arp.opcode = ARP_OPER_REPLY;
-        standard_metadata.egress_spec = standard_metadata.ingress_port;
-    }
-
     action arp_reply_forward(egressSpec_t port) {
-        standard_metadata.egress_spec = port;
-    }
+        // standard_metadata.egress_spec = port;
 
-    table arp_request {
-        key = {
-            hdr.arp.dstIpv4: exact;
-        }
-        actions = {
-            arp_request_return;
-            arp_request_flood;
-        }
-        size = 1024;
-        default_action = arp_request_flood();
+        /* TODO: Handle ARP requests and craft response according to the match-action 
+        *  table 
+        */
+        /* TODO: update operation code from request to reply */
+        
+        /* TODO: reply's dst_mac is the request's src mac */
+        
+        /* TODO:reply's dst_ip is the request's src ip */
+        
+        /* TODO: reply's src ip is the request's dst ip */
+
+        /* TODO: update ethernet header, i.e., source and destination addresses */
+        
+        /* TODO: send it back to the same port (metadata.ingress_port) */
     }
 
     table arp_reply{
@@ -189,7 +185,7 @@ control MyIngress(inout headers hdr,
         }
         else if (hdr.arp.isValid()) {
             if (hdr.arp.opcode == ARP_OPER_REQUEST) {
-                arp_request.apply();
+                arp_request_flood();
             }
             else if (hdr.arp.opcode == ARP_OPER_REPLY) {
                 arp_reply.apply();
@@ -212,10 +208,11 @@ control MyEgress(inout headers hdr,
     apply {
         if (standard_metadata.egress_port == standard_metadata.ingress_port)
         {
-            if (hdr.arp.isValid() && hdr.arp.opcode != ARP_OPER_REPLY)
+            if (hdr.arp.isValid() && hdr.arp.opcode == ARP_OPER_REPLY) {}
+            else
             {
                 drop();
-            } 
+            }
         }
     }
 }
