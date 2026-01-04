@@ -77,7 +77,7 @@ def writeTunnelRules(p4info_helper, ingress_sw, egress_sw, tunnel_id,
         },
         action_name="MyIngress.myTunnel_forward",
         action_params={
-            "port": SWITCH_TO_HOST_PORT
+            "port": SWITCH_TO_SWITCH_PORT
         })
     ingress_sw.WriteTableEntry(table_entry)
     print("Installed forward tunnel rule on %s" % ingress_sw.name)
