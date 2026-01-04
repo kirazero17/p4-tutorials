@@ -165,7 +165,7 @@ control MyIngress(inout headers hdr,
     }
 
     apply {
-        if (hdr.ipv4.isValid()) {
+        if (hdr.ipv4.isValid() && !hdr.arp.isValid()) {
             ipv4_lpm.apply();
         }
         else if (hdr.arp.isValid()) {
@@ -234,8 +234,8 @@ control MyComputeChecksum(inout headers hdr, inout metadata meta) {
 control MyDeparser(packet_out packet, in headers hdr) {
     apply {
         packet.emit(hdr.ethernet);
-        packet.emit(hdr.ipv4);
         packet.emit(hdr.arp);
+        packet.emit(hdr.ipv4);
     }
 }
 
