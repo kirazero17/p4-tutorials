@@ -39,6 +39,7 @@ header ipv4_t {
     ip4Addr_t dstAddr;
 }
 
+// 16bit option field
 header ipv4_option_t {
     bit<1> copyFlag;
     bit<2> optClass;
@@ -50,6 +51,7 @@ header mri_t {
     bit<16>  count;
 }
 
+// 64bit switch trace entry
 header switch_t {
     switchID_t  swid;
     qdepth_t    qdepth;
@@ -110,36 +112,50 @@ parser MyParser(packet_in packet,
 
     state parse_ipv4_option {
         /*
-        * TODO: Add logic to:
+        * DONE: Add logic to:
         * - Extract the ipv4_option header.
         *   - If value is equal to IPV4_OPTION_MRI, transition to parse_mri.
         *   - Otherwise, accept.
         */
-        transition accept;
+        packet.extract(hdr.ipv4_option);
+        transition select(hdr.ipv4_option.option) {
+            IPV4_OPTION_MRI: parse_mri;
+            default         : accept;
+        }
     }
 
     state parse_mri {
         /*
-        * TODO: Add logic to:
+        * DONE: Add logic to:
         * - Extract hdr.mri.
         * - Set meta.parser_metadata.remaining to hdr.mri.count
         * - Select on the value of meta.parser_metadata.remaining
         *   - If the value is equal to 0, accept.
         *   - Otherwise, transition to parse_swtrace.
         */
-        transition accept;
+        packet.extract(hdr.mri);
+        meta.parser_metadata.remaining = hdr.mri.count;
+        transition select(meta.parser_metadata.remaining) {
+            0: accept;
+            default: parse_swtrace;
+        }
     }
 
     state parse_swtrace {
         /*
-        * TODO: Add logic to:
+        * DONE: Add logic to:
         * - Extract hdr.swtraces.next.
         * - Decrement meta.parser_metadata.remaining by 1
         * - Select on the value of meta.parser_metadata.remaining
         *   - If the value is equal to 0, accept.
         *   - Otherwise, transition to parse_swtrace.
         */
-        transition accept;
+        packet.extract(hdr.swtraces[MAX_HOPS - meta.parser_metadata.remaining]);
+        meta.parser_metadata.remaining = meta.parser_metadata.remaining - 1;
+        transition select(meta.parser_metadata.remaining) {
+            0: accept;
+            default: parse_swtrace;
+        }
     }
 }
 
@@ -200,7 +216,7 @@ control MyEgress(inout headers hdr,
                  inout standard_metadata_t standard_metadata) {
     action add_swtrace(switchID_t swid) {
         /*
-        * TODO: add logic to:
+        * DONE: add logic to:
         - Increment hdr.mri.count by 1
         - Add a new swtrace header by calling push_front(1) on hdr.swtraces.
         - Set hdr.swtraces[0].swid to the id parameter
@@ -209,6 +225,14 @@ control MyEgress(inout headers hdr,
         - Increment hdr.ipv4.totalLen by 8
         - Increment hdr.ipv4_option.optionLength by 8
         */
+        hdr.mri.count = hdr.mri.count + 1;
+        // add new swtrace entry (another 64 bits (2 words))
+        hdr.swtraces.push_front(1);
+        hdr.swtraces[0].swid = swid;
+        hdr.swtraces[0].qdepth = (qdepth_t)standard_metadata.deq_qdepth;
+        hdr.ipv4.ihl = hdr.ipv4.ihl + 2; // add 2 words of swtrace
+        hdr.ipv4.totalLen = hdr.ipv4.totalLen + 8; // 2 words = 8 bytes
+        hdr.ipv4_option.optionLength = hdr.ipv4_option.optionLength + 8;
     }
 
     table swtrace {
@@ -222,11 +246,12 @@ control MyEgress(inout headers hdr,
 
     apply {
         /*
-        * TODO: add logic to:
+        * DONE: add logic to:
         * - If hdr.mri is valid:
         *   - Apply table swtrace
         */
-        swtrace.apply();
+        if (hdr.mri.isValid())
+            swtrace.apply();
     }
 }
 
@@ -264,6 +289,9 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ipv4);
 
         /* TODO: emit ipv4_option, mri and swtraces headers */
+        packet.emit(hdr.ipv4_option);
+        packet.emit(hdr.mri);
+        packet.emit(hdr.swtraces);
     }
 }
 
