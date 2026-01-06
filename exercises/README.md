@@ -58,4 +58,13 @@ How does the qdepth header change with different queue depths and rates?
 
 ## 6. Source Routing
 
-- [ ] Basic exercise
+- [x] Basic exercise
+- [ ] Food for thought
+
+#### Food for thought
+
+1. ***Can we change the program to handle both IPv4 forwarding and source routing at the same time?***
+   - It is possible, and the source routing should be in higher priority in the logic of this case
+
+2. ***How would you enhance your program to let the first switch add the path, so that source routing would be transparent to end-hosts?***
+   - This should be done via table that will put an array of ports into a header key.
