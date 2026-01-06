@@ -34,3 +34,6 @@
    - The switch did not decrease the TTL after the tunneled packet passes through it, which may cause the packet to travel indefinitely if it cannot find the destination.
   
 ## 4. Implementing Explicit Congestion Notification (ECN)
+
+- [x] Basic exercise
+
