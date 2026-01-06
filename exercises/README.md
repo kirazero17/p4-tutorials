@@ -43,3 +43,7 @@ It might be possible to allow user to define the ecn threshold using table and a
 
 ## 5. Implementing Multi-Hop Route Inspection (MRI)
 
+- [x] Basic exercise
+- [ ] Food for thought
+
+#### Food for thought
