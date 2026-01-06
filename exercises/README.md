@@ -40,3 +40,6 @@
 #### Food for thought
 
 It might be possible to allow user to define the ecn threshold using table and a wrapper around P4Runtime/P4CLI
+
+## 5. Implementing Multi-Hop Route Inspection (MRI)
+
