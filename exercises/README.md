@@ -68,3 +68,11 @@ How does the qdepth header change with different queue depths and rates?
 
 2. ***How would you enhance your program to let the first switch add the path, so that source routing would be transparent to end-hosts?***
    - This should be done via table that will put an array of ports into a header key.
+
+## 7. Calculator:
+
+This is not practical enough, will come back later.
+
+## 8. Load Balancing:
+
+- [ ] Basic exercise
