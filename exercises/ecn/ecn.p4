@@ -128,13 +128,20 @@ control MyIngress(inout headers hdr,
 control MyEgress(inout headers hdr,
                  inout metadata meta,
                  inout standard_metadata_t standard_metadata) {
+    // action mark_ecn() {
+    //     hdr.ipv4.ecn = 3;
+    // }
+    
+    // table mark_ecn {
+    //     actions = {
+    //         mark_ecn;
+    //         NoAction;
+    //     }
+    //     size = 1;
+    //     default_action = NoAction();
+    // }
+
     apply {
-        /*
-         * WIP/DONE:
-         * - if ecn is 1 or 2
-         *   - compare standard_metadata.enq_qdepth with threshold
-         *     and set hdr.ipv4.ecn to 3 if larger
-         */
          if (hdr.ipv4.isValid()) {
              if (hdr.ipv4.ecn == 1 || hdr.ipv4.ecn == 2) {
                  if (standard_metadata.enq_qdepth > ECN_THRESHOLD) {
