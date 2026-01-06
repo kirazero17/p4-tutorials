@@ -150,7 +150,7 @@ parser MyParser(packet_in packet,
         *   - If the value is equal to 0, accept.
         *   - Otherwise, transition to parse_swtrace.
         */
-        packet.extract(hdr.swtraces[MAX_HOPS - meta.parser_metadata.remaining]);
+        packet.extract(hdr.swtraces.next);
         meta.parser_metadata.remaining = meta.parser_metadata.remaining - 1;
         transition select(meta.parser_metadata.remaining) {
             0: accept;
@@ -228,6 +228,7 @@ control MyEgress(inout headers hdr,
         hdr.mri.count = hdr.mri.count + 1;
         // add new swtrace entry (another 64 bits (2 words))
         hdr.swtraces.push_front(1);
+        hdr.swtraces[0].setValid(); // make sure the new header part is valid
         hdr.swtraces[0].swid = swid;
         hdr.swtraces[0].qdepth = (qdepth_t)standard_metadata.deq_qdepth;
         hdr.ipv4.ihl = hdr.ipv4.ihl + 2; // add 2 words of swtrace

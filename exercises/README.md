@@ -47,3 +47,11 @@ It might be possible to allow user to define the ecn threshold using table and a
 - [ ] Food for thought
 
 #### Food for thought
+Switch queue depth and rate by default:
+- s1:
+  - depth: 0
+- s2:
+  - depth: 0
+
+How does the qdepth header change with different queue depths and rates?
+- I could not make the qdepth header change, will return later.
