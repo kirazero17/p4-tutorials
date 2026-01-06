@@ -55,3 +55,7 @@ Switch queue depth and rate by default:
 
 How does the qdepth header change with different queue depths and rates?
 - I could not make the qdepth header change, will return later.
+
+## 6. Source Routing
+
+- [ ] Basic exercise
