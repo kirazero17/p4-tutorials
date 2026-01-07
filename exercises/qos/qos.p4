@@ -37,12 +37,14 @@ header ethernet_t {
 }
 
 /*
- * TODO: split tos to two fields 6 bit diffserv and 2 bit ecn
+ * DONE: split tos to two fields 6 bit diffserv and 2 bit ecn
  */
 header ipv4_t {
     bit<4>    version;
     bit<4>    ihl;
-    bit<8>    tos;
+    // bit<8>    tos;
+    bit<6>    diffserv;
+    bit<2>    ecn;
     bit<16>   totalLen;
     bit<16>   identification;
     bit<3>    flags;
@@ -119,7 +121,78 @@ control MyIngress(inout headers hdr,
     }
 
 /* TODO: Implement actions for different traffic classes */
+    action default_forward() {
+        hdr.ipv4.diffserv = 0x00; // Best Effort
+    }
 
+    action expedited_forward() {
+        hdr.ipv4.diffserv = 0x2E; // Expedited Forwarding
+    }
+
+    action voice_admit() {
+        hdr.ipv4.diffserv = 0x2C; // Voice Admit
+    }
+
+    /* Assured Forwarding */
+    /* Class 1 Low drop probability */
+    action af_11() {
+        hdr.ipv4.diffserv = 0x0A;
+    }
+
+    /* Class 1 Med drop probability */
+    action af_12() {
+        hdr.ipv4.diffserv = 0x0C;
+    }
+
+    /* Class 1 High drop probability */
+    action af_13() {
+        hdr.ipv4.diffserv = 0x0E;
+    }
+
+    /* Class 2 Low drop probability */
+    action af_21() {
+        hdr.ipv4.diffserv = 0x12;
+    }
+
+    /* Class 2 Med drop probability */
+    action af_22() {
+        hdr.ipv4.diffserv = 0x14;
+    }
+
+    /* Class 2 High drop probability */
+    action af_23() {
+        hdr.ipv4.diffserv = 0x16;
+    }
+
+    /* Class 3 Low drop probability */
+    action af_31() {
+        hdr.ipv4.diffserv = 0x1A;
+    }
+
+    /* Class 3 Med drop probability */
+    action af_32() {
+        hdr.ipv4.diffserv = 0x1C;
+    }
+
+    /* Class 3 High drop probability */
+    action af_33() {
+        hdr.ipv4.diffserv = 0x1E;
+    }
+
+    /* Class 4 Low drop probability */
+    action af_41() {
+        hdr.ipv4.diffserv = 0x22;
+    }
+
+    /* Class 4 Med drop probability */
+    action af_42() {
+        hdr.ipv4.diffserv = 0x24;
+    }
+
+    /* Class 4 High drop probability */
+    action af_43() {
+        hdr.ipv4.diffserv = 0x26;
+    }
 
     table ipv4_lpm {
         key = {
@@ -138,6 +211,11 @@ control MyIngress(inout headers hdr,
     apply {
         if (hdr.ipv4.isValid()) {
             ipv4_lpm.apply();
+            if (hdr.ipv4.protocol == IP_PROTOCOLS_TCP) {
+                expedited_forward();
+            } else if (hdr.ipv4.protocol == IP_PROTOCOLS_UDP) {
+                voice_admit();
+            }
         }
     }
 }
@@ -164,7 +242,8 @@ control MyComputeChecksum(inout headers hdr, inout metadata meta) {
             hdr.ipv4.isValid(),
             { hdr.ipv4.version,
               hdr.ipv4.ihl,
-              hdr.ipv4.tos,
+              hdr.ipv4.diffserv,
+              hdr.ipv4.ecn,
               hdr.ipv4.totalLen,
               hdr.ipv4.identification,
               hdr.ipv4.flags,

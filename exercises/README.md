@@ -79,4 +79,10 @@ This is not practical enough, will come back later.
 
 ## 9. Quality-of-service:
 
-- [ ] Basic exercise 
+- [x] Basic exercise
+
+#### Self-note on the exercise:
+
+***Food for thought:*** How can we let the user use other protocols?
+
+- Some actions (mostly assured forwarding actions) are defined but unused, they can be assigned later if new upper layer protocols or specific packet criteria are defined.
