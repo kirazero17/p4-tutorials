@@ -75,4 +75,8 @@ This is not practical enough, will come back later.
 
 ## 8. Load Balancing:
 
-- [ ] Basic exercise
+- [x] Basic exercise => I managed to make ecmp work by switching from an old Ubuntu 20.04 P4 VM to a 24.04 one. Sometimes, it may route the packet to only one switch for multiple consecutive packets, which makes it seems not to work. But be patient.
+
+## 9. Quality-of-service:
+
+- [ ] Basic exercise 
