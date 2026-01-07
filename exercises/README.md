@@ -80,9 +80,12 @@ This is not practical enough, will come back later.
 ## 9. Quality-of-service:
 
 - [x] Basic exercise
+- [ ] Get QoS into use => will come back later
 
 #### Self-note on the exercise:
 
 ***Food for thought:*** How can we let the user use other protocols?
 
 - Some actions (mostly assured forwarding actions) are defined but unused, they can be assigned later if new upper layer protocols or specific packet criteria are defined.
+
+- Queues and mechanisms to count the turn between different them is needed to show QoS-based priority. Use exercise 5 for queue reference.
