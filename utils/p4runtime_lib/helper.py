@@ -217,4 +217,3 @@ class P4InfoHelper(object):
             r.instance = replica['instance']
             clone_entry.clone_session_entry.replicas.extend([r])
         return clone_entry
-
