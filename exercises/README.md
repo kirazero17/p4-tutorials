@@ -92,4 +92,14 @@ This is not practical enough, will come back later.
 
 ## 10. Implementing Multicast
 
-- [ ] Basic exercise
+- [x] Basic exercise on the P4 file - The hosts cannot ping h4 (connected to switch port 4) yet
+- [x] Add port 4 to the multicast group in file sig-topo/s1-runtime.json - This makes h4 pingable.
+
+#### Food for thought:
+
+- [ ] How would you enhance your program to respond to ARP requests?
+   - Answer: (learn fron exercise 1)
+- [ ] How would you enhance your program to support MAC learning from the controller?
+   - Answer: program a packet type that acquire the IP - MAC mapping from the ARP packets, then put that into a new packet that is sent to the controller. On the controller side, save it in a table and send that table entry back to the switch.
+
+## 11. Firewall
