@@ -103,3 +103,14 @@ This is not practical enough, will come back later.
    - Answer: program a packet type that acquire the IP - MAC mapping from the ARP packets, then put that into a new packet that is sent to the controller. On the controller side, save it in a table and send that table entry back to the switch.
 
 ## 11. Firewall
+
+- [x] Basic exercise
+- [ ] Food for thought:
+   - [ ] How would you implement the removal of TCP connections that are no longer active?
+   - [ ] Can we simply set the bloom filter array bits to 0 on receiving a FIN packet? What happens when there is one hash collision in the bloom filter arrays between two active TCP connections?
+   - [ ] How can we modify our bloom filter structure so that the deletion operation can be properly supported?
+
+## 12. Link monitoring
+
+- [x] Basic exercise
+- [ ] Food for thought:
